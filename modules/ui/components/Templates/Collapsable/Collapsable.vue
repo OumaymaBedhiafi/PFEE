@@ -10,7 +10,7 @@
           collapsed = e;
         }
       "
-    />
+    /> 
     <a-layout>
       <UiMainContent>
         <slot />

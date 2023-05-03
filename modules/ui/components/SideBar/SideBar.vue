@@ -3,32 +3,10 @@
     :collapsed="collapsed"
     :trigger="null"
     collapsible
-    collapsed-width="80"
+    collapsed-width="false"
     theme="light"
     class="sidebar"
   >
-    <div class="hide">
-      <div
-        class="align-icon-text"
-        :class="collapsed ? 'icon-position-colapse' : 'spacing-left nowrap'"
-      >
-        <img
-          class="trigger"
-          :src="collapsed ? icoHamburgerOn : icoHamburger"
-          @click="
-            () => {
-              collapse = !collapsed;
-              $emit('collapse-menu', collapse);
-            }
-          "
-        >
-        <span
-          :class="{ collapsed: collapsed }"
-          class="font-sf-regular grey-color close"
-        >{{ $t('CLOSE') }}</span>
-      </div>
-    </div>
-
     <UiNavMenu
       :collapsed="collapsed"
       :nav-tree="navTree"
@@ -37,12 +15,7 @@
     <div
       class="spacing-y hide"
       :class="collapsed ? 'icon-position-colapse' : 'nowrap'"
-    >
-      <span
-        v-if="!collapsed"
-        class="font-sf-regular dark-color spacing-ln opacity-50"
-      >Nuxt-3 DDD</span>
-    </div>
+    />
   </a-layout-sider>
 </template>
 <script lang="ts" setup>
@@ -68,4 +41,9 @@ defineProps({
 .collapsed {
   display: none;
 }
+.sidebar{
+  
+  overflow-inline: scroll;
+}
 </style>
+

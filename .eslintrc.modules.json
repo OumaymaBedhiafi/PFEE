@@ -1,5 +1,6 @@
 {
   "globals": {
+    "navIcons": "readonly",
     "useProductsStore": "readonly",
     "useProducts": "readonly",
     "useLanguageStore": "readonly",

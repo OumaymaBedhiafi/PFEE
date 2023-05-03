@@ -80,9 +80,16 @@ export default defineNuxtConfig({
     `../${baseFolder}/modules/config`,
     `../${baseFolder}/modules/language`,
     `../${baseFolder}/modules/products`,
+    `../${baseFolder}/modules/apps`,
+
+    
     // npm module
     '@pinia/nuxt',
     '@nuxtjs/i18n', // keep last
+   
+  ],
+  css: [
+    '@fortawesome/fontawesome-svg-core/styles.css'
   ],
   i18n: {
     locales: ['en', 'fr'],

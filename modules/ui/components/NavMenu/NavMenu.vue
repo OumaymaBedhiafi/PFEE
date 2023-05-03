@@ -1,202 +1,167 @@
 <template>
   <a-menu
     class="menu font-sf-regular margin-t-menu"
-    theme="light"
     mode="inline"
+    theme="gray"
   >
-    <a-menu-item
-      v-for="(nav, index) in navTree"
-      :key="index"
-      class="menu-item"
-      :class="{ 'ant-menu-item-selected-custom': useActiveMenu(nav) }"
-      @click="
-        () => {
-          navigateTo(localePath(nav.path));
-        }
-      "
-    >
-      <img
-        v-if="nav.icon"
-        class="menu-item-icon anticon"
-        alt=""
-        :src="
-          useActiveMenu(nav) && nav.icon
-            ? iconsNav[nav.icon.active] || nav.icon.active
-            : iconsNav[nav.icon.default] || nav.icon.default
-        "
+    <a-row justify="space-around">
+      <draggable
+        :clone="clone"
+        class="drag"
+        :list="navTree"
+        :sort="false"
+        :group="{ name: 'oum', pull: 'clone', put: false }"
+        item-key="id"
       >
-      <span>{{ $t(nav.name) }}</span>
-      <div class="arrow-position">
-        <img
-          src="@UI/assets/img/arrowRight.svg"
-          class="arrow-size"
-          alt=""
+        <template
+          #item="{ element: nav }"
         >
-      </div>
-    </a-menu-item>
+          <a-col
+            class="component rounded"
+            :span="120"
+          >
+            <a-menu-item class="menu-item">
+              <div
+                v-if="nav.organismName!=='section'"
+                class="icon-container"
+              >
+                <img :src="navIcons[nav.image]">
+              
+          
+                <span class="label-class"> {{ $t(nav.organismName) }} </span>
+              </div>
+
+              <div v-if="nav.organismName ==='section'">
+                <a-popover placement="right">
+                  <template #content>
+                    <div class="icon-container">
+                      <div
+                        class="my-icon-class"
+                      >
+                        <img :src="navIcons[nav.image]">
+                      </div>
+                    </div>
+                  </template>
+                  <template #title>
+                    <span>Add New Section</span>
+                  </template>
+                  <span class="label-class">{{ $t(nav.organismName) }}</span>
+                </a-popover>
+              </div>
+            </a-menu-item>
+          </a-col>
+        </template>
+      </draggable>
+    </a-row>
   </a-menu>
 </template>
+
+
+
+
 <script lang="ts" setup>
-defineProps({
-  collapsed: {
-    type: Boolean,
-  },
-  navTree: {
-    type: Array,
-    default: () => {
-      return [];
+ import { v4 as uuidv4 } from 'uuid'
+ import { cloneDeep } from 'lodash';
+ import nav from '~~/assets/data/nav.json';
+
+
+ 
+
+  defineProps({
+    collapsed: {
+      type: Boolean,
     },
-  },
-});
-const $route = useRoute();
-const locale = useNuxtApp().$i18n.locale.value;
-const isocode = $route.params.isocode;
-const prefix = '/' + locale + '/' + isocode;
-const useActiveMenu = (item: any) => {
-  let result;
-  if (item.path == '/' && $route.path.replace(/\/$/, '') === prefix) {
-    result = true;
-  } else if (
-    item.path != prefix &&
-    $route.path.replace(/\/$/, '').includes(useNuxtApp().$localePath(item.path)) &&
-    item.path != '/'
-  ) {
-    result = true;
-  } else if (item.child) {
-    result =
-      item.child.findIndex((a: any) => {
-        let path = useNuxtApp().$localePath(a).replace(/\/$/, '');
-        return a != '/' && path && $route.path.replace(/\/$/, '').includes(path);
-      }) > -1;
+    navTree: {
+      type: Array,
+      default: () => {
+        return [];
+      },
+    },
+  });
+
+  const clone = (component) => {
+            component.uuid = uuidv4()
+                return cloneDeep(component)
+            }
+
+  function onDragOver(event): void {
+    event.target.classList.add('dndPlaceholder');
   }
-  return result;
-};
+
+
+  
+  
+
+   function onDragStart(event: DragEvent) {
+
+   // event.dataTransfer.dropEffect = 'move';
+    //event.dataTransfer.effectAllowed = "move";
+
+
+    //event.dataTransfer?.setData('component', JSON.stringify(component))
+    //  this.$emit('onDragstart', 'bg-light');
+    //},
+    //onDragEnd(event: DragEvent) {
+      //this.$emit('onDragEnd');
+    }
+  
+
+
 </script>
+
+
 <style lang="less">
 @import 'ant-design-vue/lib/menu/style/index.less';
 </style>
+
 <style lang="scss" scoped>
 @import '@UI/assets/scss/variable';
 
-.menu {
-  @media only screen and (max-width: 767px) {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    overflow-y: hidden;
-  }
-  @media only screen and (min-width: 768px) {
-    flex: 1;
-    overflow-y: auto;
-  }
-
-  border: 0;
-  overflow-x: hidden;
-}
-
-@media only screen and (max-width: 767px) {
-  .menu-item div img {
-    display: none;
-  }
-
-  .menu-item img {
-    width: 20px;
-    margin: 0;
-  }
-
-  .menu-item > span span {
-    margin: 0;
-    line-height: 30px;
-  }
-}
-@media only screen and (min-width: 768px) {
-  .margin-t-menu {
-    margin-top: 40px;
-  }
-}
-
-:deep(.ant-menu-item) {
+.icon-container {
+  border: 1px solid rgb(255, 255, 225);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  @media only screen and (max-width: 767px) {
-    width: 100%;
-    height: 100%;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    align-content: stretch;
-    justify-content: center;
-    font-family: $sfMedium;
-    font-size: 10px;
+  justify-content: center;
+  background: rgb(255, 255, 255);
+  padding: 20px 30px  20px  30px ;
 
-    .ant-menu.ant-menu-inline-collapsed > & {
+}
+
+.my-icon-class {
+  color: #86898d;
+  font-size:3px;
+}
+
+.label-class {
+ 
+  font-size: 11px;
+  color: #595c5f;
+  line-height: 1;
+}
+
+.menu.ant-menu-gray {
+  background-color: #f7f7f7;
+
+  height: 100%;
+ 
+}
+.menu-item {
+  display: inline-block;
+  margin-right: 10px; /* vous pouvez ajuster ce nombre pour définir l'espace entre les éléments de menu */
+}
+
+
+.email-structure {
+  min-height: 100%;
+}
+
+#components-popover-demo-placement .ant-btn {
+      width: 70px;
+      text-align: center;
       padding: 0;
+      margin-right: 8px;
+      margin-bottom: 8px;
     }
 
-    > .ant-menu-title-content {
-      height: 100%;
-      flex-direction: column;
-      flex-wrap: nowrap;
-    }
-  }
-
-  > .ant-menu-title-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  @media only screen and (min-width: 768px) {
-    .ant-menu & {
-      height: 52px;
-    }
-
-    img {
-      .ant-menu-inline-collapsed & {
-        margin-left: -12px;
-      }
-    }
-  }
-}
-
-.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected-custom {
-  @media only screen and (max-width: 767px) {
-    background-color: transparent;
-  }
-  @media only screen and (min-width: 768px) {
-    background-color: $bgNavItem;
-  }
-}
-
-:deep(.ant-menu-item-selected-custom) {
-  background: $bgNavItem;
-  color: $primaryColor;
-}
-
-.arrow-position {
-  display: flex;
-  width: 100%;
-  justify-content: flex-end;
-  opacity: 0;
-  transition: all 0.3s;
-  visibility: hidden;
-
-  .ant-menu-item-selected-custom & {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .ant-tooltip &,
-  .ant-menu-inline-collapsed & {
-    display: none;
-  }
-}
-
-.arrow-size {
-  width: 15px;
-  min-width: 15px;
-}
-
-.ant-menu-item .menu-item-icon {
-  width: 26px;
-  min-width: 26px;
-}
 </style>
